@@ -16,8 +16,8 @@ use esp_hal::{
 };
 use esp_println::logger::init_logger;
 use log::info;
-use ssd1680::displays::adafruit_thinkink_2in9::{Display2in9Gray2, ThinkInk2in9Gray2};
-use ssd1680::prelude::*;
+use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{Display2in9Gray2, ThinkInk2in9Gray2};
+use epd_datafuri::prelude::*;
 
 esp_bootloader_esp_idf::esp_app_desc!();
 

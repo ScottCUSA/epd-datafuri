@@ -2,7 +2,7 @@
 #![no_main]
 
 use embedded_graphics::{
-    pixelcolor::BinaryColor,
+    pixelcolor::Gray2,
     prelude::*,
     primitives::{Primitive, PrimitiveStyle, Rectangle},
 };
@@ -16,7 +16,7 @@ use esp_hal::{
 };
 use esp_println::logger::init_logger;
 use log::info;
-use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{Display2in9Mono, ThinkInk2in9Mono};
+use epd_datafuri::displays::adafruit_thinkink_290_t5::{Display2in9Gray2, ThinkInk2in9Gray2};
 use epd_datafuri::prelude::*;
 
 esp_bootloader_esp_idf::esp_app_desc!();
@@ -42,6 +42,7 @@ fn main() -> ! {
     .with_sck(sclk)
     .with_miso(miso)
     .with_mosi(mosi);
+    // IL0373 busy pin is active-low (LOW = busy, HIGH = ready)
     let busy = Input::new(peripherals.GPIO5, InputConfig::default());
     let rst = Output::new(peripherals.GPIO6, Level::Low, OutputConfig::default());
     let dc = Output::new(peripherals.GPIO7, Level::High, OutputConfig::default());
@@ -49,8 +50,8 @@ fn main() -> ! {
     let spi_device = ExclusiveDevice::new(spi, cs, Delay::new()).unwrap();
 
     // Create display with SPI interface
-    let mut epd = ThinkInk2in9Mono::new(spi_device, busy, dc, rst).unwrap();
-    let mut display = Display2in9Mono::new();
+    let mut epd = ThinkInk2in9Gray2::new(spi_device, busy, dc, rst).unwrap();
+    let mut display_gray = Display2in9Gray2::new();
     let mut delay = Delay::new();
 
     // Initialize the display
@@ -59,16 +60,16 @@ fn main() -> ! {
     info!("Draw some black text");
     let character_style = embedded_graphics::mono_font::MonoTextStyle::new(
         &embedded_graphics::mono_font::ascii::FONT_7X14_BOLD,
-        BinaryColor::Off,
+        Gray2::BLACK,
     );
     embedded_graphics::text::Text::new("Hello from Rust!", Point::new(10, 15), character_style)
-        .draw(&mut display)
+        .draw(&mut display_gray)
         .unwrap();
 
-    info!("Draw a light gray cube");
+    info!("Draw a light gray rectangle");
     Rectangle::new(Point::new(50, 50), Size::new(25, 25))
-        .into_styled(PrimitiveStyle::with_fill(BinaryColor::Off))
-        .draw(&mut display)
+        .into_styled(PrimitiveStyle::with_fill(Gray2::new(0x01)))
+        .draw(&mut display_gray)
         .unwrap();
 
     info!("Draw dark gray bitmap");
@@ -78,20 +79,24 @@ fn main() -> ! {
         100,
     );
     embedded_graphics::image::Image::new(&raw, Point::new(150, 20))
-        .draw(&mut display)
+        .draw(&mut display_gray.as_binary_draw_target())
         .unwrap();
 
-    info!("Draw a black line");
+    info!("Draw a dark gray line");
     let line = embedded_graphics::primitives::Line::new(Point::new(100, 20), Point::new(140, 107));
-    line.into_styled(PrimitiveStyle::with_stroke(BinaryColor::Off, 3))
-        .draw(&mut display)
+    line.into_styled(PrimitiveStyle::with_stroke(Gray2::new(0b10), 3))
+        .draw(&mut display_gray)
         .unwrap();
 
     info!("Display frame");
 
     // Transfer and display the buffer on the display
-    epd.update_and_display(display.buffer(), &mut delay)
-        .unwrap();
+    epd.update_gray2_and_display(
+        display_gray.high_buffer(),
+        display_gray.low_buffer(),
+        &mut delay,
+    )
+    .unwrap();
 
     // Done
     info!("Done");
