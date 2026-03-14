@@ -2,7 +2,7 @@
 //!
 //! This module targets the **original** Adafruit MagTag board revision which
 //! uses the IL0373 e-paper controller. The 2025 edition uses an SSD1680
-//! instead; see [`adafruit_thinkink_2in9_mfngr`](super::adafruit_thinkink_2in9_mfngr).
+//! instead; see [`adafruit_thinkink_290_mfgn`](self::adafruit_thinkink_290_mfgn).
 //!
 //! ## Key differences from the SSD1680 variant
 //!
@@ -14,8 +14,8 @@
 //! | Gray2 encoding | Identical two-plane scheme | Identical two-plane scheme |
 //!
 //! Because the panel dimensions (296×128) and Gray2 encoding are identical,
-//! - [`ThinkInk2in9Gray2`]: 2-bit, 4-level grayscale rendering using the Gray2 LUT
-//! - [`ThinkInk2in9Mono`]: black/white rendering using the mono full LUT
+//! - [`adafruit_thinkink_290_t5::ThinkInk2in9Gray2`](self::adafruit_thinkink_290_t5::ThinkInk2in9Gray2): 2-bit, 4-level grayscale rendering using the Gray2 LUT
+//! - [`adafruit_thinkink_290_t5::ThinkInk2in9Mono`](self::adafruit_thinkink_290_t5::ThinkInk2in9Mono): black/white rendering using the mono full LUT
 
 use crate::color::Color;
 use crate::driver::il0373::Il0373Cmd;

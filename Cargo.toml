@@ -1,6 +1,6 @@
 [package]
 name = "epd-datafuri"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Scott Cummings"]
 description = "Driver for Adafruit e-Paper display (EPD) controllers (SSD1680, IL0373), for use with embedded-hal"
 edition = "2021"

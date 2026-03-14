@@ -1,39 +1,74 @@
-//! epd-datafuri: Adafruit ePaper Display Driver
+//! Rust driver for Adafruit e-Paper displays (EPD), for use with [embedded-hal].
 //!
-//! Supports [Adafruit ThinkInk 2.9" Mono / 4 Grayscale display](https://www.adafruit.com/product/4777)
-//! and [Adafruit MagTag 2.9"](https://www.adafruit.com/product/4800).
+//! ## Supported Displays
 //!
-//! For a complete example see [the example](https://github.com/ScottCUSA/magtag_esp_hal).
-//!
-//! This driver is loosely modeled after the
-//! [epd-waveshare](https://github.com/caemor/epd-waveshare) drivers.
-//!
-//! ## Architecture
-//!
-//! This driver separates hardware control from graphics rendering:
-//! - **Driver structs** (`ThinkInk2in9Mono`, `MagTag2in9`) handle hardware interface and controller commands
-//! - **Graphics structs** (`Display2in9Mono`, `Display2in9Gray2`) handle frame buffers and embedded-graphics integration
-//!
-//! This allows multiple graphics buffers (e.g., for grayscale planes) to share a single hardware driver.
+//! | Display | Controller | Colors | Grayscale |
+//! |---------|-----------|--------|-----------|
+//! | Adafruit ThinkInk 2.9" EAAMFGN (2025 MagTag) | SSD1680 | BW | Gray2 (2-bit, 4-level) |
+//! | Adafruit ThinkInk 2.9" T5 (original MagTag) | IL0373 | BW | Gray2 (2-bit, 4-level) |
 //!
 //! ## Usage
 //!
-//! ### Adafruit ThinkInk 2.9" Display (Mono/Grayscale, SSD1680)
+//! ### ThinkInk 2.9" — Monochrome (SSD1680)
 //!
 //! ```rust, ignore
 //! use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{ThinkInk2in9Mono, Display2in9Mono};
+//! use epd_datafuri::prelude::*;
 //!
-//! // Create driver and graphics buffer
 //! let mut driver = ThinkInk2in9Mono::new(spi, busy, dc, rst)?;
 //! let mut display = Display2in9Mono::new();
 //!
-//! // Draw and update in one command
+//! // Draw using embedded-graphics
+//! Text::new("Hello!", Point::new(10, 20), text_style).draw(&mut display)?;
+//!
+//! driver.begin(&mut delay)?;
 //! driver.update_and_display(display.buffer(), &mut delay)?;
 //! ```
 //!
-//! For advanced use cases, you can also use the individual `update_bw()`, `update_red()`,
-//! `update()`, and `update_display()` methods for more granular control.
+//! ### ThinkInk 2.9" — Grayscale (SSD1680)
 //!
+//! ```rust, ignore
+//! use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{ThinkInk2in9Gray2, Display2in9Gray2};
+//! use epd_datafuri::prelude::*;
+//! use embedded_graphics::pixelcolor::Gray2;
+//!
+//! let mut driver = ThinkInk2in9Gray2::new(spi, busy, dc, rst)?;
+//! let mut display = Display2in9Gray2::new();
+//!
+//! // Draw using embedded-graphics with 4-level gray
+//! Text::new("Hello!", Point::new(10, 20), text_style).draw(&mut display)?;
+//!
+//! driver.begin(&mut delay)?;
+//! driver.update_gray2_and_display(display.high_buffer(), display.low_buffer(), &mut delay)?;
+//! ```
+//!
+//! ### MagTag 2.9" — Grayscale (IL0373)
+//!
+//! ```rust, ignore
+//! use epd_datafuri::displays::adafruit_thinkink_290_t5::{ThinkInk2in9Gray2, Display2in9Gray2};
+//! use epd_datafuri::prelude::*;
+//! use embedded_graphics::pixelcolor::Gray2;
+//!
+//! let mut driver = ThinkInk2in9Gray2::new(spi, busy, dc, rst)?;
+//! let mut display = Display2in9Gray2::new();
+//!
+//! driver.begin(&mut delay)?;
+//! driver.update_gray2_and_display(display.high_buffer(), display.low_buffer(), &mut delay)?;
+//! ```
+//!
+//! ## Grayscale
+//!
+//! 2-bit, 4-level grayscale (Gray2) is supported for both displays. Each display module
+//! exports its own `Display2in9Gray2` with the correct plane mapping for that controller:
+//!
+//! - [`displays::adafruit_thinkink_290_mfgn::Display2in9Gray2`] for the ThinkInk 2.9" (SSD1680)
+//! - [`displays::adafruit_thinkink_290_t5::Display2in9Gray2`] for the MagTag 2.9" (IL0373)
+//!
+//! ## Notes
+//!
+//! Partial updates are not supported.
+//!
+//! [embedded-hal]: https://crates.io/crates/embedded-hal
 #![no_std]
 #![deny(missing_docs)]
 #![allow(clippy::pedantic)]
@@ -48,12 +83,6 @@ pub mod displays;
 pub mod driver;
 #[cfg(feature = "graphics")]
 pub mod graphics;
-
-/// Maximum display height this driver supports
-pub const MAX_HEIGHT: u16 = 296;
-
-/// Maximum display width this driver supports
-pub const MAX_WIDTH: u16 = 176;
 
 pub mod interface;
 

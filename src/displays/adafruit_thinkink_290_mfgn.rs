@@ -2,7 +2,7 @@
 //!
 //! This module targets the 2025 revision of the Adafruit ThinkInk 2.9" and MagTag boards,
 //! which use the SSD1680 e-paper controller. The original MagTag revision uses an IL0373
-//! instead; see [`adafruit_thinkink_2in9_t5`](super::adafruit_thinkink_2in9_t5).
+//! instead; see [`adafruit_thinkink_290_t5`](self::adafruit_thinkink_290_t5).
 //!
 //! ## Key differences from the IL0373 variant
 //!
@@ -14,8 +14,8 @@
 //! | Gray2 encoding | Identical two-plane scheme | Identical two-plane scheme |
 //!
 //! Two driver structs are provided:
-//! - [`ThinkInk2in9Mono`]: black/white rendering using the mono full LUT
-//! - [`ThinkInk2in9Gray2`]: 4-level grayscale rendering using the Gray2 LUT
+//! - [`adafruit_thinkink_290_mfgn::ThinkInk2in9Mono`](self::adafruit_thinkink_290_mfgn::ThinkInk2in9Mono): black/white rendering using the mono full LUT
+//! - [`adafruit_thinkink_290_mfgn::ThinkInk2in9Gray2`](self::adafruit_thinkink_290_mfgn::ThinkInk2in9Gray2): 4-level grayscale rendering using the Gray2 LUT
 
 use crate::color::Color;
 use crate::driver::ssd1680::{Cmd, Flag};
@@ -85,7 +85,7 @@ pub const TI_290MFGN_GRAY2_LUT_CODE: [u8; 153] = [
 ///
 /// The SSD1680 busy pin is active-high (HIGH = busy, LOW = ready).
 ///
-/// Use [`Display2in9`] as the graphics buffer for black/white rendering, or
+/// Use [`Display2in9Mono`] as the graphics buffer for black/white rendering, or
 /// [`ThinkInk2in9Gray2`] with [`Display2in9Gray2`] for 4-level grayscale.
 pub struct ThinkInk2in9Mono<SPI, BSY, DC, RST>
 where
@@ -309,7 +309,7 @@ where
 ///
 /// The SSD1680 busy pin is active-high (HIGH = busy, LOW = ready).
 ///
-/// Use [`Display2in9Gray2::new_inverted`] to create a correctly configured
+/// Use [`Display2in9Gray2::new`] to create a correctly configured
 /// graphics buffer for this driver.
 pub struct ThinkInk2in9Gray2<SPI, BSY, DC, RST>
 where

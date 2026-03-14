@@ -11,8 +11,8 @@ const RESET_DELAY_MS: u8 = 10;
 /// SPI connection interface for EPD displays.
 ///
 /// Busy pin polarity varies by controller: SSD1680 is active-high (HIGH = busy),
-/// IL0373 is active-low (LOW = busy). Use [`Self::wait_until_idle`] or
-/// [`Self::wait_until_idle_active_low`] accordingly.
+/// IL0373 is active-low (LOW = busy). Use `wait_until_idle` or
+/// `wait_until_idle_active_low` accordingly.
 pub struct SpiDisplayInterface<SPI, BSY, DC, RST> {
     /// SPI device
     spi: SPI,
