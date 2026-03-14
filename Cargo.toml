@@ -1,15 +1,15 @@
 [package]
-name = "ssd1680"
-version = "0.2.0"
-authors = ["Konstantin Terekhov <c@kmbv.info>"]
-description = "Driver for the SSD1680 e-Paper display (EPD) controller, for use with embedded-hal"
+name = "epd-datafuri"
+version = "0.1.0"
+authors = ["Scott Cummings"]
+description = "Driver for Adafruit e-Paper display (EPD) controllers (SSD1680, IL0373), for use with embedded-hal"
 edition = "2021"
 
-documentation = "https://docs.rs/ssd1680"
-repository = "https://github.com/mbv/ssd1680"
+documentation = "https://docs.rs/epd-datafuri"
+repository = "https://github.com/ScottCUSA/magtag_esp_hal"
 
 readme = "README.md"
-keywords = ["embedded-hal-driver", "epd", "epaper", "driver", "ssd1680"]
+keywords = ["embedded-hal-driver", "epd", "epaper", "driver", "adafruit"]
 categories = ["embedded", "no-std"]
 
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,7 @@ license = "MIT OR Apache-2.0"
 embedded-hal = "1.0.0"
 embedded-graphics = { version = "0.8.1", optional = true }
 display-interface = "0.5.0"
-log = "0.4.28"
+log = "0.4.29"
 
 [features]
 default = ["graphics"]

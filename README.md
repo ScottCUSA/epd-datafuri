@@ -1,37 +1,119 @@
-# SSD1680 ePaper Display Driver
+# epd-datafuri
 
-Rust driver for the [Solomon Systech SSD1680][SSD1680] e-Paper display (EPD)
-controller, for use with [embedded-hal].
+Rust driver for Adafruit e-Paper display (EPD) controllers, for use with [embedded-hal].
 
-[![crates.io](https://img.shields.io/crates/v/ssd1680.svg)](https://crates.io/crates/ssd1680)
-[![Documentation](https://docs.rs/ssd1680/badge.svg)](https://docs.rs/ssd1680/)
+Supported controllers:
+- **SSD1680** (Solomon Systech): [datasheet][SSD1680]
+- **IL0373** (Good Display): original Adafruit MagTag 2.9"
 
+[![crates.io](https://img.shields.io/crates/v/epd-datafuri.svg)](https://crates.io/crates/epd-datafuri)
+[![Documentation](https://docs.rs/epd-datafuri/badge.svg)](https://docs.rs/epd-datafuri/)
+
+
+## Supported Displays
+
+| Display | Controller | Colors | Grayscale |
+|---------|-----------|--------|-----------|
+| Adafruit ThinkInk 2.9" (2025 revision) | SSD1680 | BW | Gray2 (4-level) |
+| Adafruit MagTag 2.9" (original revision) | IL0373 | BW | Gray2 (4-level) |
 
 ## Description
 
-This driver is written for a [WeAct Studio Epaper Module 2.13" Tri-Color][tricolor] display.
-It will probably work for other displays with the same chip.
+Built using [embedded-hal] and optionally [embedded-graphics].
 
-It is built using [embedded-hal] and optionally [embedded-graphics]. 
+### Grayscale
 
-## Examples
-* [ESP32-S2](https://github.com/ScottCUSA/magtag_esp_hal)
+4-level grayscale (Gray2) is supported for both displays. Each display module
+exports its own `Display2in9Gray2` with the correct plane mapping for that
+controller:
 
-## Partial updates
+- `adafruit_thinkink_290_mfgn::Display2in9Gray2` for the ThinkInk 2.9" (SSD1680)
+- `adafruit_thinkink_290_t5::Display2in9Gray2` for the MagTag 2.9" (IL0373)
+
+### Partial Updates
+
 Partial updates are not currently supported.
 
-## Grayscale
-4 Color Grayscale is not currently supported.
+## Usage
+
+### ThinkInk 2.9" — Monochrome (SSD1680)
+
+```rust,ignore
+use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{ThinkInk2in9Mono, Display2in9Mono};
+use epd_datafuri::prelude::*;
+
+let mut driver = ThinkInk2in9Mono::new(spi, busy, dc, rst)?;
+let mut display = Display2in9Mono::new();
+
+// Draw using embedded-graphics
+Text::new("Hello!", Point::new(10, 20), text_style).draw(&mut display)?;
+
+driver.begin(&mut delay)?;
+driver.update_and_display(display.buffer(), &mut delay)?;
+```
+
+### ThinkInk 2.9" — Grayscale (SSD1680)
+
+```rust,ignore
+use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{ThinkInk2in9Gray2, Display2in9Gray2};
+use epd_datafuri::prelude::*;
+use embedded_graphics::pixelcolor::Gray2;
+
+let mut driver = ThinkInk2in9Gray2::new(spi, busy, dc, rst)?;
+let mut display = Display2in9Gray2::new();
+
+// Draw using embedded-graphics with 4-level gray
+Text::new("Hello!", Point::new(10, 20), text_style).draw(&mut display)?;
+Rectangle::new(Point::new(50, 50), Size::new(40, 40))
+    .into_styled(PrimitiveStyle::with_fill(Gray2::new(1)))
+    .draw(&mut display)?;
+
+driver.begin(&mut delay)?;
+driver.update_gray2_and_display(display.high_buffer(), display.low_buffer(), &mut delay)?;
+```
+
+### MagTag 2.9" — Grayscale (IL0373)
+
+```rust,ignore
+use epd_datafuri::displays::adafruit_thinkink_290_t5::{ThinkInk2in9Gray2, Display2in9Gray2};
+use epd_datafuri::prelude::*;
+use embedded_graphics::pixelcolor::Gray2;
+
+let mut driver = ThinkInk2in9Gray2::new(spi, busy, dc, rst)?;
+let mut display = Display2in9Gray2::new();
+
+// Draw using embedded-graphics with 4-level gray
+Text::new("Hello!", Point::new(10, 20), text_style).draw(&mut display)?;
+Rectangle::new(Point::new(50, 50), Size::new(40, 40))
+    .into_styled(PrimitiveStyle::with_fill(Gray2::new(1)))
+    .draw(&mut display)?;
+
+driver.begin(&mut delay)?;
+driver.update_gray2_and_display(display.high_buffer(), display.low_buffer(), &mut delay)?;
+```
+
+## Examples
+
+- [ESP-HAL MagTag examples](examples/)
+  - `adafruit_magtag_bw`: black/white rendering (SSD1680)
+  - `adafruit_magtag_gray2`: 4-level grayscale rendering (SSD1680)
+  - `adafruit_magtag_legacy_gray2`: 4-level grayscale rendering (IL0373)
+- [ESP32-S2 example project](https://github.com/ScottCUSA/magtag_esp_hal)
 
 ## Credits
 
+This crate is a fork of [ssd1680](https://crates.io/crates/ssd1680) by
+[Konstantin Terekhov](https://github.com/mbv), extended to support additional
+Adafruit EPD controllers.
+
 * [Arduino Display Library for SPI E-Paper Displays](https://github.com/ZinggJM/GxEPD2)
+* [Adafruit ThinkInk Arduino library](https://github.com/adafruit/Adafruit_EPD)
 * [SSD1681 EPD driver](https://github.com/afajl/ssd1681)
 * [Waveshare EPD driver](https://github.com/caemor/epd-waveshare)
 
 ## License
 
-`ssd1680` is dual licenced under:
+`epd-datafuri` is dual licenced under:
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) **or**
   http://www.apache.org/licenses/LICENSE-2.0)
@@ -39,9 +121,4 @@ Partial updates are not currently supported.
 
 [embedded-hal]: https://crates.io/crates/embedded-hal
 [embedded-graphics]: https://github.com/embedded-graphics/embedded-graphics
-[LICENSE-APACHE]: https://github.com/mbv/ssd1675/blob/master/LICENSE-APACHE
-[LICENSE-MIT]: https://github.com/mbv/ssd1675/blob/master/LICENSE-MIT
 [SSD1680]: https://www.solomon-systech.com/product/ssd1680
-[hardware problem]: https://forums.adafruit.com/viewtopic.php?f=47&t=146252&p=722909&hilit=partial+update#p722957.
-[tricolor]: https://www.aliexpress.com/item/1005004644515880.html
-

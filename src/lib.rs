@@ -1,12 +1,12 @@
-//! SSD1680 ePaper Display Driver
+//! epd-datafuri: Adafruit ePaper Display Driver
 //!
-//! Used in the [WeAct 2.13" Tri-Color display](https://www.aliexpress.com/item/1005004644515880.html)
-//! or [Adafruit ThinkInk 2.9" Mono / 4 Grayscale display](https://www.adafruit.com/product/4777)
+//! Supports [Adafruit ThinkInk 2.9" Mono / 4 Grayscale display](https://www.adafruit.com/product/4777)
+//! and [Adafruit MagTag 2.9"](https://www.adafruit.com/product/4800).
 //!
-//! For a complete example see [the example](https://github.com/mbv/esp32-ssd1680/blob/main/src/main.rs).
+//! For a complete example see [the example](https://github.com/ScottCUSA/magtag_esp_hal).
 //!
 //! This driver is loosely modeled after the
-//! [epd-waveshare](https://github.com/caemor/epd-waveshare) drivers but built for my needs.
+//! [epd-waveshare](https://github.com/caemor/epd-waveshare) drivers.
 //!
 //! ## Architecture
 //!
