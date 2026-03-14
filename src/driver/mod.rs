@@ -1,10 +1,13 @@
-//! Driver for interacting with EPD displays
+//! Driver trait and chip-specific implementations
 pub use display_interface::DisplayError;
+
+pub(crate) mod il0373;
+pub(crate) mod ssd1680;
 
 use embedded_hal::delay::DelayNs;
 
-/// Trait defining the driver interface for SSD1680 displays
-pub trait Ssd1680Driver {
+/// Trait defining the driver interface for EPD displays
+pub trait EpdDriver {
     /// Reset and initialize the display
     fn init(&mut self, delay: &mut impl DelayNs) -> Result<(), DisplayError>;
 

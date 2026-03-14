@@ -68,13 +68,10 @@
 #![allow(clippy::must_use_candidate)]
 #![allow(clippy::missing_errors_doc)]
 
-mod cmd;
 pub mod color;
 #[cfg(feature = "graphics")]
 pub mod displays;
 pub mod driver;
-
-mod flag;
 
 /// Maximum display height this driver supports
 pub const MAX_HEIGHT: u16 = 296;
