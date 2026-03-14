@@ -8,16 +8,19 @@ use embedded_hal::{
 
 const RESET_DELAY_MS: u8 = 10;
 
-/// The Connection Interface of SPI devices
+/// SPI connection interface for EPD displays.
 ///
+/// Busy pin polarity varies by controller: SSD1680 is active-high (HIGH = busy),
+/// IL0373 is active-low (LOW = busy). Use [`Self::wait_until_idle`] or
+/// [`Self::wait_until_idle_active_low`] accordingly.
 pub struct SpiDisplayInterface<SPI, BSY, DC, RST> {
     /// SPI device
     spi: SPI,
-    /// Low for busy, Wait until display is ready!
+    /// Busy status pin (polarity is controller-dependent)
     busy: BSY,
     /// Data/Command Control Pin (High for data, Low for command)
     dc: DC,
-    /// Pin for Reseting
+    /// Reset pin
     rst: RST,
 }
 
@@ -81,10 +84,22 @@ where
         Ok(())
     }
 
-    /// Waits until device isn't busy anymore (busy == HIGH)
+    /// Waits until device isn't busy anymore (busy == HIGH).
+    ///
+    /// Used by SSD1680-based displays where the busy pin is active-high (HIGH = busy).
     pub(crate) fn wait_until_idle(&mut self, delay: &mut impl DelayNs) {
         log::trace!("Waiting until display is idle");
         while self.busy.is_high().unwrap_or(true) {
+            delay.delay_ms(1)
+        }
+    }
+
+    /// Waits until device isn't busy anymore (busy == LOW).
+    ///
+    /// Used by IL0373-based displays where the busy pin is active-low (LOW = busy, HIGH = ready).
+    pub(crate) fn wait_until_idle_active_low(&mut self, delay: &mut impl DelayNs) {
+        log::trace!("Waiting until display is idle (active-low busy)");
+        while self.busy.is_low().unwrap_or(true) {
             delay.delay_ms(1)
         }
     }
