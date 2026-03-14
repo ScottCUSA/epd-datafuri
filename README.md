@@ -1,21 +1,22 @@
 # epd-datafuri
 
-Rust driver for Adafruit e-Paper display (EPD) controllers, for use with [embedded-hal].
-
-Supported controllers:
-- **SSD1680** (Solomon Systech): [datasheet][SSD1680]
-- **IL0373** (Good Display): original Adafruit MagTag 2.9"
-
-[![crates.io](https://img.shields.io/crates/v/epd-datafuri.svg)](https://crates.io/crates/epd-datafuri)
-[![Documentation](https://docs.rs/epd-datafuri/badge.svg)](https://docs.rs/epd-datafuri/)
-
+Rust driver for Adafruit e-Paper displays (EPD), for use with [embedded-hal].
 
 ## Supported Displays
 
 | Display | Controller | Colors | Grayscale |
 |---------|-----------|--------|-----------|
-| Adafruit ThinkInk 2.9" (2025 revision) | SSD1680 | BW | Gray2 (4-level) |
-| Adafruit MagTag 2.9" (original revision) | IL0373 | BW | Gray2 (4-level) |
+| Adafruit ThinkInk 2.9" EAAMFGN (2025 MagTag) | SSD1680 | BW | Gray2 (2-bit, 4-level) |
+| Adafruit ThinkInk 2.9" T5 (original MagTag) | IL0373 | BW | Gray2 (2-bit, 4-level) |
+
+[![crates.io](https://img.shields.io/crates/v/epd-datafuri.svg)](https://crates.io/crates/epd-datafuri)
+[![Documentation](https://docs.rs/epd-datafuri/badge.svg)](https://docs.rs/epd-datafuri/)
+
+Supported controllers:
+- **SSD1680** (Solomon Systech): [datasheet][SSD1680]
+- **IL0373** (Good Display):  [datasheet][IL0373]
+
+[Documentation][MagTag]
 
 ## Description
 
@@ -23,7 +24,7 @@ Built using [embedded-hal] and optionally [embedded-graphics].
 
 ### Grayscale
 
-4-level grayscale (Gray2) is supported for both displays. Each display module
+2-bit, 4-level grayscale (Gray2) is supported for both displays. Each display module
 exports its own `Display2in9Gray2` with the correct plane mapping for that
 controller:
 
@@ -32,13 +33,13 @@ controller:
 
 ### Partial Updates
 
-Partial updates are not currently supported.
+Partial updates are not supported.
 
 ## Usage
 
 ### ThinkInk 2.9" — Monochrome (SSD1680)
 
-```rust,ignore
+```rust
 use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{ThinkInk2in9Mono, Display2in9Mono};
 use epd_datafuri::prelude::*;
 
@@ -54,7 +55,7 @@ driver.update_and_display(display.buffer(), &mut delay)?;
 
 ### ThinkInk 2.9" — Grayscale (SSD1680)
 
-```rust,ignore
+```rust
 use epd_datafuri::displays::adafruit_thinkink_290_mfgn::{ThinkInk2in9Gray2, Display2in9Gray2};
 use epd_datafuri::prelude::*;
 use embedded_graphics::pixelcolor::Gray2;
@@ -74,7 +75,7 @@ driver.update_gray2_and_display(display.high_buffer(), display.low_buffer(), &mu
 
 ### MagTag 2.9" — Grayscale (IL0373)
 
-```rust,ignore
+```rust
 use epd_datafuri::displays::adafruit_thinkink_290_t5::{ThinkInk2in9Gray2, Display2in9Gray2};
 use epd_datafuri::prelude::*;
 use embedded_graphics::pixelcolor::Gray2;
@@ -94,17 +95,17 @@ driver.update_gray2_and_display(display.high_buffer(), display.low_buffer(), &mu
 
 ## Examples
 
-- [ESP-HAL MagTag examples](examples/)
+- [ESP32-S2 MagTag examples](examples/)
   - `adafruit_magtag_bw`: black/white rendering (SSD1680)
   - `adafruit_magtag_gray2`: 4-level grayscale rendering (SSD1680)
   - `adafruit_magtag_legacy_gray2`: 4-level grayscale rendering (IL0373)
-- [ESP32-S2 example project](https://github.com/ScottCUSA/magtag_esp_hal)
+- [MagTag example project](https://github.com/ScottCUSA/magtag_weatherstation_rs)
 
 ## Credits
 
-This crate is a fork of [ssd1680](https://crates.io/crates/ssd1680) by
-[Konstantin Terekhov](https://github.com/mbv), extended to support additional
-Adafruit EPD controllers.
+This crate was originally a fork of [ssd1680](https://crates.io/crates/ssd1680) by
+[Konstantin Terekhov](https://github.com/mbv). It has been heavily modified 
+to support the Adafruit MagTag EPD displays.
 
 * [Arduino Display Library for SPI E-Paper Displays](https://github.com/ZinggJM/GxEPD2)
 * [Adafruit ThinkInk Arduino library](https://github.com/adafruit/Adafruit_EPD)
@@ -121,4 +122,6 @@ Adafruit EPD controllers.
 
 [embedded-hal]: https://crates.io/crates/embedded-hal
 [embedded-graphics]: https://github.com/embedded-graphics/embedded-graphics
-[SSD1680]: https://www.solomon-systech.com/product/ssd1680
+[SSD1680]: https://learn.adafruit.com/adafruit-2-9-eink-display-breakouts-and-featherwings/downloads
+[IL0373]: https://www.smart-prototyping.com/image/data/9_Modules/EinkDisplay/GDEW0154T8/IL0373.pdf
+[MagTag]: https://learn.adafruit.com/adafruit-magtag
